@@ -388,8 +388,6 @@ Clearly, it is better to not use the first PC and this is why we perform the tes
 
 # Supervised Learning
 
-Now we move to the supervised learning of our models in which we will try to get the best predictive performance we can, and select the best performing models and parameters for the final predictions.
-
 ## Dropseq
 
 ### MCF7
@@ -400,25 +398,16 @@ More specifically, we use a split on the training data (i.e. we split the traini
 
 #### Logistic Regression (97% ACCURACY)
 
-Here we once again show the results of our best model in the gridsearch using the cross calidation.
 
 #### K-Nearest Neighbors (94.5% ACCURACY)
 
-The code follow the same format as in the logistic regression but this time we get a lower but still impressive accuracy of 94.5 percent.
-
 #### Support Vector Machine and Kernel SVM (97% ACCURACY)
-
-Moving to the SVM, again with the same format, we are back to the 97% accuracy which we got with the logistic regression as well. This suggests that in all of our dimensions, the data is quite linearly separable. This result is also confirmed below by the very little improvement when using kernel SVM.
 
 #### Kernel Support Vector Machine (97.5% ACCURACY)
 
 #### Naive Bayes (82% ACCURACY)
 
-In the Naive Bayes model we get significantly lower accuracy than on the previous models. Since the Naive Bayes model assumes that the features are conditionally independent, a lower accuracy would suggest that our dataset does not meet these expectations. Our dataset likely has more complex feature interactions and thus we get a lower result here than in the previous cases.
-
 #### Random Forest (94.6% ACCURACY)
-
-Moving to the random forests we get an accuracy of around 94%. Random forests are sometimes prone to overfitting but looking at the results of our predictions on the test set we see that the model is well trained.
 
 ### HCC1806
 
@@ -445,8 +434,6 @@ From the confusion matrices in the models below, we see that all of the models p
 Now we move to the SmartSeq MCF7 case. Here we see that we have quite a few models that give a 100% accuracy on the cross-validation and basically all models give a 100% accuracy on the training set. This is not too surprising given our results on this dataset during the unsupervised learning. We managed to get around 94% accuracy just with k-means clustering as our data was very linearly separable. Thus more complex supervised models manage to learn the distribution perfectly and get perfect results. What is interesting, however, in this case is that the Kernel SVM is one of the worst performing models in this dataset with 96% accuracy. Of course the accuracy is very high but the comparison with the SVM and other perfect models suggest that the data is so linearly separable in its natural dimensions that using a kernel only moves us away from that separability.
 
 #### Logistic Regression (100% ACCURACY)
-
-
 
 #### Support Vector Machine and Kernel SVM (100% ACCURACY)
 
@@ -475,28 +462,6 @@ Now we move to the SmartSeq HCC1806 case. Again we see very high accuracies of a
 ## Supervised Learning Conslusion
 
 In conclusion of the supervised learning, we got very impressive results on each of the datasets. On both of the DropSeq cases, the best performance was achieved by the kernel support vector machine with an accuracy of 97.5% for the MCF7 cells and an accuracy of 94% in the HCC1806 cells. In the SmartSeq databases we got also amazing results, especially in the MCF7 case where we had multiple models with 100% accuracy. Specifically they were logistic regression, support vector machine, and random forest. In the HCC1806 case the best performing model was the logistic regression with 98.6% accuracy. What we also noticed is that on the SmartSeq method we managed to get higher accuracy than in the DropSeq case which suggests that deeper sequencing with fewer samples provides us more information about the underlying condition than more shallow sequencing with many samples.
-
-# Predictions
-
-## SmartSeq
-
-### MCF7
-
-Predictions on SmartSeq MCF7 using SVM with (kernel ='linear', C=0.1)
-
-### HCC1806
-
-Predictions on SmartSeq MCF7 using SVM with (kernel ='linear', C=0.1)
-
-## DropSeq
-
-### MCF7
-
-Predictions on DropSeq MCF7 using Kernel SVM with ('C': 100, 'gamma': 0.001, 'kernel': 'rbf'), we shuffled the dataset because initially it was perfectly separated in two groups: the first one including only 0 labes and second one only 1s. This raised a problem during the plotting of the learning curve because, during the first stes, it was selecting elements with the same label.
-
-### HCC1806
-
-Predictions on DropSeq HCC1806 using Kernel SVM with ('C': 1, 'gamma': 'scale', 'kernel': 'rbf')
 
 # Conclusion
 
