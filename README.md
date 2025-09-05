@@ -378,7 +378,6 @@ We begin by doing principal component analysis. Although some feature selection 
 
 Now we do the actual PCA. We will see the result by plotting our samples (i.e. cells) on the PC1 vs PC2 scale and by marking the Normal and Hypoxic cells with different colors. In the case of the SmartSeq HCC1806 database we see that the cells are not divided as clearly as in the previous case. Not only that but even though the main variance between the cells by definition along the first principal component, we see that the clusters of hypoxic vs normoxic cells seem to be separated along the PC2 axis. This is a very interesting result that could suggest a few different things. One could be that simply due to outliers in our data, they have thrown off our PCA and thus the main principal component is not the one that separates the two different types of cells (as we would have assumed as it would make sense the main source of variance to be related to the two different classifiers). This scenario is quite plausible as we can see that the big majority of samples are on the left hand side but just a few are very far on the right. So the variance along PC1 could have been precisely caused by these few cells. Another reason might be that other differences between the cells are also prominent which would suggest that the cells could have another separating factor or factors that we are not aware of. Plotting the data on our second and third principal components we see that a clear border is still not present but the main direction of variance (now PC2) aligns with the direction that roughly separates the two classes of cells. Either way, the cut is less clear than in the MCF7 case which could suggest that in this dataset of cells the biological difference between the two classes is not as prominent and thus not picked out by the PCA. We will continue with doing the clustering on the first 30 PCs and a second time on the same PCs but excluding PC1. In both cases the data is normalized, standardized and log-scaled for maximum success of the PCA.
 
-First we start by the K-means clustering on PC2 to PC30. We plot the data on the first two PCs but that is of not too great importance as we seek to compare the true labels vs the cluster labels. What we see is that the model is relatively successful but again, due to the unclear separation of the data, does poorer compared to the SmartSeq MCF7 case. Our Adjusted Rand Index is 0.64 where 1 is perfect and 0 is as good as random. The score is not terrible but a stronger model would be required for further improvement.
 
 #### Clustering
 
@@ -397,7 +396,6 @@ We start with the Dropseq MCF7 case and we begin with a logistic regression. Our
 More specifically, we use a split on the training data (i.e. we split the training data that is given to us in the project). On the train split of the training data, we perform grid search and cross-validation to get the best model, and then we use that model to check its performance on data it has never seen (i.e. the test split of our training set).
 
 #### Logistic Regression (97% ACCURACY)
-
 
 #### K-Nearest Neighbors (94.5% ACCURACY)
 
@@ -476,3 +474,90 @@ DropSeq HCC1806: Kernel SVM ('C': 1, 'gamma': 'scale', 'kernel': 'rbf')
 SmartSeq MCF7: SVM ('C': 0.01, 'kernel': 'linear')
 
 SmartSeq HCC1806: SVM ('C': 0.01, 'kernel': 'linear')
+
+
+# Hypoxic Cell Detection
+
+A machine learning project to classify **hypoxic vs. normoxic** single cells from two breast-cancer-related cell lines using two sequencing technologies.
+
+## Overview
+- **Cell lines:** MCF7, HCC1806  
+- **Technologies:** SmartSeq (deep, fewer cells), DropSeq (shallow, more cells)  
+- **Labels:** `Hypoxic` / `Normoxic`  
+- **Matrix shape:** genes as **rows**, cells as **columns**  
+- **Objective:** build the best classifier per dataset and report accuracy on held-out data.
+
+## Datasets
+- **SmartSeq–MCF7**
+- **SmartSeq–HCC1806**
+- **DropSeq–MCF7**
+- **DropSeq–HCC1806**
+
+> SmartSeq provides deeper per‑cell coverage; DropSeq provides more cells with sparser counts.
+
+## Exploratory Highlights
+- Highly **sparse** matrices; many zero counts.
+- Expression scale differs across cells/genes → **normalization** and **log transform** needed.
+- **MCF7** shows clearer separation by condition than **HCC1806** in low‑dimensional projections.
+- Feature >> sample → **dimensionality reduction / feature selection** is beneficial.
+
+## Preprocessing
+**Quality Control (per dataset)**
+- Remove low‑quality cells using:
+  - **Total reads**: SmartSeq threshold ≈ **100k**.
+  - **Expressed genes**: SmartSeq threshold ≈ **5,000**; DropSeq filters at **50–70** genes.
+  - **Mitochondrial %**: exclude cells **>10%**.
+- Check duplicates (cells/genes); retain biologically duplicated “housekeeping” genes when appropriate.
+
+**Normalization & Transform**
+- Library‑size normalization (per cell).  
+- **Log1p** transform to stabilize variance and reduce dominance of highly expressed genes.
+
+**Feature Selection**
+- Keep **high‑variance genes**; drop near‑constant genes.
+
+## Unsupervised Learning
+- **PCA** for visualization and compression.
+- **Clustering** (K‑means, hierarchical) to probe structure.
+- Findings: **SmartSeq–MCF7** shows clear hypoxic/normoxic separation; others are weaker or mixed.
+
+## Supervised Learning
+Models evaluated with grid search and 5‑fold CV; tested on held‑out data.
+
+| Dataset | Best Model | Key Params | Test Accuracy |
+|---|---|---|---|
+| **DropSeq–MCF7** | **Kernel SVM (RBF)** | C=100, γ=0.001 | **97.5%** |
+| **DropSeq–HCC1806** | **Kernel SVM (RBF)** | C=1, γ=scale | **94–95.5%** |
+| **SmartSeq–MCF7** | **Linear SVM / Logistic / RF** | C=0.01 (SVM) | **≈100%** |
+| **SmartSeq–HCC1806** | **SVM / Logistic** | C=0.01 (linear SVM) | **≈98.6%** |
+
+Other models compared: **Logistic Regression, KNN, SVM, Kernel SVM, Naive Bayes, Random Forest**.  
+Naive Bayes underperformed, especially on **HCC1806**.
+
+## Conclusions
+- Clearer biological separation in **MCF7** than **HCC1806**; **SmartSeq** outperforms **DropSeq** overall.  
+- **SVMs** (especially RBF on DropSeq, linear on SmartSeq) provide the most reliable performance.
+
+## Reproducibility
+1. **Environment**: Python 3.x with standard ML/SC libraries (numpy, pandas, scikit‑learn, scipy, matplotlib).
+2. **Data prep**: apply QC thresholds, normalize, log1p, and select high‑variance genes.
+3. **Training**: PCA → model grid search with 5‑fold CV → evaluate on held‑out test split.
+4. **Reporting**: save metrics and confusion matrices per dataset/model.
+
+## Repository Structure
+```
+.
+├─ data/                # raw and processed matrices (not tracked)
+├─ notebooks/           # EDA and modeling notebooks
+├─ src/                 # reusable preprocessing / training code
+├─ models/              # saved model artifacts
+├─ reports/             # figures and results
+└─ README.md
+```
+
+## References
+- General QC/normalization guidance for single‑cell RNA‑seq (e.g., thresholds for reads, expressed genes, and mitochondrial percentage).
+
+---
+
+**Maintainers:** Hypoxic Cell Detection Team
