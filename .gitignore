@@ -1,0 +1,5 @@
+# Ignore data
+data/*
+!data/.gitkeep
+!data/DropSeq.gitkeep
+!data/SmartSeq.gitkeep
