@@ -60,17 +60,24 @@ Naive Bayes underperformed, especially on **HCC1806**.
 - Clearer biological separation in **MCF7** than **HCC1806**; **SmartSeq** outperforms **DropSeq** overall.  
 - **SVMs** (especially RBF on DropSeq, linear on SmartSeq) provide the most reliable performance.
 
-## Reproducibility
-1. **Environment**: Python 3.13 with standard ML/SC libraries (numpy, pandas, scikit‑learn, scipy, matplotlib).
-2. **Data prep**: apply QC thresholds, normalize, log1p, and select high‑variance genes.
-3. **Training**: PCA → model grid search with 5‑fold CV → evaluate on held‑out test split.
-4. **Reporting**: save metrics and confusion matrices per dataset/model.
-
 ## Repository Structure
 ```
 .
-├─ .gitignore                   # empty
-├─ notebook_SEQ.ipynb           # entire project
-└─ README.md
+├─ README.me                                # Information file
+├─ .gitignore                               # Ignored Files
+├─ notebook_SEQ.ipynb                       # Complete project
+├─ requirements.txt                         # Libraries needed for the project
+├─ data/                                    # Data
+│  ├─ DropSeq/                              # DropSequencing Datasets
+│  ├─ SmartSeq/                             # Smart Sequencing Datasets 
+│  ├─ processed/                            # Processed Data
+├─ notebooks/                               # empty
+│  ├─ 00_Introduction.ipynb                 # Smart Sequencing Datasets 
+│  ├─ 01_Data_Exploration.ipynb             # Processed Data
+│  ├─ 02_Data_Preprocessing.ipynb           # Smart Sequencing Datasets 
+│  ├─ 03_Unsupervised_Learning.ipynb        # Processed Data
+│  ├─ 04_Supervised_Learning.ipynb          # Processed Data
+│  ├─ 05_Predictions.ipynb                  # Processed Data
+└─ predictions/                             # Predictions made with the best models
 ```
 
