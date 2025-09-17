@@ -3,3 +3,5 @@ data/*
 !data/.gitkeep
 !data/DropSeq/.gitkeep
 !data/SmartSeq/.gitkeep
+
+.DS_Store
