@@ -1,7 +1,14 @@
 # Ignore data
 data/*
 !data/.gitkeep
+
+data/DropSeq/*
 !data/DropSeq/.gitkeep
+
+data/SmartSeq/*
 !data/SmartSeq/.gitkeep
+
+data/processed/*
+!data/processed/.gitkeep
 
 .DS_Store
